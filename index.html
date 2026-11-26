@@ -1370,6 +1370,22 @@
             const remainArr = [];
             remainSel.forEach(x => remainArr.push(x.dataset.vehicle));
 
+            // 人员名单 = 带队干部 + 供水干部 + 警情联络员 + 通信员 + 参战人员（去重）
+            const nameOf = (v) => {
+                const mm = String(v || "").match(/^[\u4e00-\u9fa5·]+/);
+                return mm ? mm[0] : String(v || "").trim();
+            };
+            const allNames = [];
+            const pushName = (n) => {
+                n = nameOf(n);
+                if (n && allNames.indexOf(n) === -1) allNames.push(n);
+            };
+            pushName(document.getElementById("leaderSelect").value);
+            if (isWaterActive()) pushName(document.getElementById("waterOfficerSelect").value);
+            if (isLiaisonActive()) pushName(document.getElementById("liaisonSelect").value);
+            commArr.forEach(x => pushName(x));
+            fighterArr.forEach(x => pushName(x));
+
             // 计算剩余力量（不算休假的）
             let totalFighter = 0;
             for(let g in listData.fighterGroup) {
@@ -1388,7 +1404,7 @@
                 output += `报告支队：${STATION_NAME}出动${carCnt}车${totalPerson}人\n`;
                 output += `带队干部：${document.getElementById("leaderSelect").value}\n`;
                 if(commArr.length > 0) output += `通信员：${commArr.join("、")}\n`;
-                if(fighterArr.length > 0) output += `人员名单：${fighterArr.join("、")}\n`;
+                if(allNames.length > 0) output += `人员名单：${allNames.join("、")}\n`;
                 if(dispatchArr.length > 0) output += `出动车辆：${dispatchArr.join("、")}\n`;
                 if(remainArr.length > 0) {
                     output += `剩余车辆：\n`;
@@ -1410,7 +1426,7 @@
                     output += `警情联络员：${document.getElementById("liaisonSelect").value}\n`;
                 }
                 if(commArr.length > 0) output += `通信员：${commArr.join("、")}\n`;
-                if(fighterArr.length > 0) output += `人员名单：${fighterArr.join("、")}\n`;
+                if(allNames.length > 0) output += `人员名单：${allNames.join("、")}\n`;
                 output += `出动车辆：\n`;
                 dispatchArr.forEach(x => output += `${x}\n`);
                 if(remainArr.length > 0) {
